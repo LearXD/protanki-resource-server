@@ -18,8 +18,13 @@ export class ResourceUtils {
             '/' + version + '/'
     }
 
-    public static decodePath(path: string) {
-        const [_, a, b, c, version] = path.split('/').filter(Boolean);
+    public static decodePath(path: string | string[]) {
+
+        if (!Array.isArray(path)) {
+            path = path.split(/[\/\\]/g).filter(Boolean)
+        }
+
+        const [_, a, b, c, version] = path.filter(Boolean);
 
         const bytes = new ByteArray();
         bytes.writeUnsignedShort(parseInt(a, 8));

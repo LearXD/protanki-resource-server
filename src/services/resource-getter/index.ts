@@ -19,25 +19,22 @@ export class ResourceGetter {
     }
 
     public async getResource(route: string) {
-        const routes = route.split(/\//g);
+        const routes = route.split(/[\/\\]/g).filter(Boolean);
 
         const _file = ResourceUtils.formatFileName(routes.pop());
-        const _directories = PathUtils.recursiveMkdir(
-            routes.length === 5 ? ResourceUtils.decodePath(routes.join('/')) : routes,
-            this.config.path
-        );
 
-        const _path = path.join(_directories, _file);
+        const _directories = path.join(...(routes.length === 5 ? ResourceUtils.decodePath(routes) : routes))
+        const _path = path.join(this.config.path, _directories, _file);
+
         const cache = this.getResourceFromCache(_path);
-
         if (cache) {
-            // console.log(`Resource found in cache: ${_path}`);
             return cache;
         }
 
         console.log(`Resource not found in cache: ${_path}`);
         const resource = await this.getResourceFromNetwork(route);
         if (resource) {
+            PathUtils.recursiveMkdir(_directories, this.config.path)
             fs.writeFileSync(_path, resource);
         }
 
@@ -55,7 +52,15 @@ export class ResourceGetter {
     public getResourceFromNetwork = async (route: string, tries = 0): Promise<Buffer> => {
         try {
             return fetch(`http://${this.config.host}:${this.config.port}/${route}`)
-                .then((response) => response.buffer())
+                .then((response) => {
+
+                    if (!response.ok) {
+                        console.log(`Resource ${route} not found: ${response.status}`)
+                        return null;
+                    }
+
+                    return response.buffer();
+                })
         } catch (error) {
             if (error instanceof Error)
                 console.error(`Error fetching resource: ${error.message}`);

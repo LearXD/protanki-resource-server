@@ -3,7 +3,11 @@ import path from 'path';
 
 export class PathUtils {
 
-    public static recursiveMkdir(directories: string[], baseDir?: string) {
+    public static recursiveMkdir(directories: string[] | string, baseDir?: string) {
+        if (!Array.isArray(directories)) {
+            directories = directories.split(/[\/\\]/g).filter(Boolean)
+        }
+
         let directory = path.resolve(baseDir || '.');
 
         for (const dir of directories) {
@@ -12,7 +16,5 @@ export class PathUtils {
                 fs.mkdirSync(directory);
             }
         }
-
-        return directory;
     }
 }

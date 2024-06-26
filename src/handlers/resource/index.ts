@@ -26,6 +26,4 @@ export class ResourceHandler {
             .getResource(route);
     }
 
-    public getResource(route: string) {
-    }
 }
