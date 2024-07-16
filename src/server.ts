@@ -25,7 +25,11 @@ export class Server {
     public registerRoutes() {
         this.server.use('/', async (req, res) => {
             const data = await this.resourceHandler.handleRoute(req.url.substring(1));
-            res.write(data);
+
+            if (data instanceof Buffer) {
+                res.write(data);
+            }
+
             res.end();
         });
 

@@ -33,8 +33,9 @@ export class ResourceGetter {
 
         console.log(`Resource not found in cache: ${_path}`);
         const resource = await this.getResourceFromNetwork(route);
-        if (resource) {
-            PathUtils.recursiveMkdir(_directories, this.config.path)
+
+        if (resource instanceof Buffer) {
+            fs.mkdirSync(path.join(this.config.path, _directories), { recursive: true });
             fs.writeFileSync(_path, resource);
         }
 
@@ -50,26 +51,26 @@ export class ResourceGetter {
     }
 
     public getResourceFromNetwork = async (route: string, tries = 0): Promise<Buffer> => {
-        try {
-            return fetch(`http://${this.config.host}:${this.config.port}/${route}`)
-                .then((response) => {
+        return await fetch(`http://${this.config.host}:${this.config.port}/${route}`)
+            .then((response) => {
 
-                    if (!response.ok) {
-                        console.log(`Resource ${route} not found: ${response.status}`)
-                        return null;
-                    }
+                if (!response.ok) {
+                    console.log(`Resource ${route} not found: ${response.status}`)
+                    return null;
+                }
 
-                    return response.buffer();
-                })
-        } catch (error) {
-            if (error instanceof Error)
-                console.error(`Error fetching resource: ${error.message}`);
+                return response.buffer();
+            })
+            .catch(error => {
+                if (error instanceof Error)
+                    console.error(`Error fetching resource: ${error.message}`);
 
-            if (tries >= 3) {
-                console.log(`Retrying (${tries}/3)...`);
-                return this.getResourceFromNetwork(route, tries + 1);
-            }
-            return null;
-        }
+                if (tries < 3) {
+                    console.log(`Retrying (${tries + 1}/3)...`);
+                    return this.getResourceFromNetwork(route, tries + 1);
+                }
+
+                return null;
+            })
     }
 }

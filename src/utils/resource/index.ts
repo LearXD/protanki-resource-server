@@ -31,7 +31,10 @@ export class ResourceUtils {
         bytes.writeUnsignedByte(parseInt(b, 8));
         bytes.writeUnsignedByte(parseInt(c, 8));
 
-        return [bytes.readInt().toString(), version.toString()]
+        return [
+            bytes.readInt().toString(),
+            parseInt(version, 8).toString()
+        ]
     }
 
     public static formatFileName(fileName: string) {
