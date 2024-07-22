@@ -1,0 +1,6 @@
+<cfg xmlns="http://alternativaplatform.com/core/config.xsd">
+<server address="191.233.240.192">
+	<port>1337</port>
+</server>
+<status>available</status>
+</cfg>

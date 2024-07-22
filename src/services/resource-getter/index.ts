@@ -25,6 +25,7 @@ export class ResourceGetter {
 
         const _directories = path.join(...(routes.length === 5 ? ResourceUtils.decodePath(routes) : routes))
         const _path = path.join(this.config.path, _directories, _file);
+        console.log(`Getting resource: ${_path}`);
 
         const cache = this.getResourceFromCache(_path);
         if (cache) {
