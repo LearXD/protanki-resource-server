@@ -15,16 +15,23 @@ export class Server {
     public constructor(
         private readonly config: ServerConfig
     ) {
+        this.resourceHandler = new ResourceHandler(path.resolve('./assets'));
         this.server = express();
-
-        this.resourceHandler = new ResourceHandler({
-            path: path.resolve('./resources')
-        });
     }
 
     public registerRoutes() {
+        this.server.use('/:a/:b/:c/:d/:version/:file', async (req, res) => {
+            const data = await this.resourceHandler.handleResourceRoute(req.params);
+
+            if (data instanceof Buffer) {
+                res.write(data);
+            }
+
+            res.end();
+        });
+
         this.server.use('/', async (req, res) => {
-            const data = await this.resourceHandler.handleRoute(req.url.substring(1));
+            const data = await this.resourceHandler.handleFileRoute(req.url);
 
             if (data instanceof Buffer) {
                 res.write(data);
@@ -37,12 +44,10 @@ export class Server {
 
     public start() {
         return new Promise((resolve) => {
-            this.server.listen(
-                this.config.port, () => {
-                    this.registerRoutes();
-                    resolve(this.config.port)
-                }
-            );
+            this.registerRoutes();
+            this.server.listen(this.config.port, () => {
+                resolve(this.config.port)
+            });
         });
     }
 }
