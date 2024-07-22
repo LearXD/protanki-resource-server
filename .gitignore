@@ -1,5 +1,8 @@
 node_modules/
-resources/
+
+resources/*
+!/resources/Prelauncher.swf
+!/resources/config.xml
 
 dist/
 
