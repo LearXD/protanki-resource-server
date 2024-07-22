@@ -1,10 +1,11 @@
 node_modules/
 
-assets/*
-!/assets/Prelauncher.swf
-!/assets/config.xml
+assets/
+# !/assets/swf/Prelauncher.swf
+# !/assets/config.xml
 
 dist/
+backup/
 
 # Conversion script files
 scripts/
