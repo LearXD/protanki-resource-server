@@ -5,6 +5,7 @@ import fs from 'fs';
 
 import { ResourceUtils } from '../../utils/resource';
 import { IResourceData } from '../../handlers/resource';
+import { Config } from '../../utils/config';
 
 export enum ResourceType {
     SWF = 'swf',
@@ -38,8 +39,8 @@ export class ResourceGetter {
                 return Buffer.from(
                     xml.create({ version: '1.0' })
                         .ele('cfg', { xmlns: 'http://alternativaplatform.com/core/config.xsd' })
-                        .ele('server', { address: '127.0.0.1' })
-                        .ele('port').txt('1338').up()
+                        .ele('server', { address: Config.get('SERVER_ADDRESS', '127.0.0.1') })
+                        .ele('port').txt(Config.get('SERVER_PORT', 1337)).up()
                         .up()
                         .ele('status').txt('available')
                         .end()
